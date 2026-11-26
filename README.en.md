@@ -1,6 +1,6 @@
 # KMOU-WLAN Connected but No Internet | Korea Maritime & Ocean University Wi-Fi
 
-[한국어](README.md) · [Troubleshooting write-up template](TEMPLATE.md)
+[한국어](README.md)
 
 A Windows laptop connected to Korea Maritime & Ocean University (KMOU) Wi-Fi but could not reach the internet. The network was KMOU-WLAN, and the laptop showed a 169.254.x.x address after failing to obtain one through DHCP. A similar symptom was reported on another laptop. Across three access points, **the affected laptop sent 15 DHCP Discover packets and received no Offers**. Later that afternoon, it reconnected to the original access point, received an address, and passed an internet connectivity check.
 
