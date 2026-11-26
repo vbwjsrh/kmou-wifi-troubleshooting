@@ -17,10 +17,6 @@ While connected to KMOU-WLAN, check two lines in Windows.
 | IPv4 is outside `169.254.x.x` and the default gateway has an IPv4 address | The laptop in this case showed a different result during the failure. Try several websites to see whether the problem affects all of them or just one. |
 | You cannot sign in to campus Wi-Fi | Open the university IT site and select **스마트캠퍼스 안내 → 학내 무선네트워크** for campus Wi-Fi setup instructions. [KMOU IT](https://www.kmou.ac.kr/cisc/main.do) |
 
-If the issue persists after reconnecting, note the time and location and select **Help-Desk → 장애접수** on the university IT site. A report can be as simple as the example below, even without a packet capture. [KMOU IT Help Desk menu](https://www.kmou.ac.kr/cisc/main.do)
-
-> At [time] today in [building and floor], I connected to KMOU-WLAN. The IPv4 address starts with 169.254 and the default gateway is blank. Websites load on the same laptop using my phone hotspot. After reconnecting to campus Wi-Fi, I still see the same result.
-
 ## What the records show
 
 **November 3, 2026.** The laptop sent several messages looking for an address (`Discover`). The campus network offered one (`Offer`), the laptop asked to use it (`Request`), and the network approved it (`ACK`). This is how the laptop obtained an IP address through DHCP.
