@@ -2,40 +2,29 @@
 
 [한국어](README.md)
 
-**The laptop signed in to KMOU-WLAN but could not get an IPv4 address from the campus network. Internet access returned once the network assigned an address.** On November 3, the laptop made several attempts before it received an address offer from the campus network. The capture also shows the network approving the lease. The laptop’s records do not show why no reply reached it on the earlier attempts.
+The laptop signed in to KMOU-WLAN, but websites wouldn’t load. It was still waiting for an IPv4 address from the campus network. **Once the network assigned an address, web access returned.**
 
-## Check your Windows laptop
+## Check for the same symptom on Windows
 
-While connected to KMOU-WLAN, check two lines in Windows.
+1. Connect to KMOU-WLAN, search for `cmd` in the Start menu, and run `ipconfig` in Command Prompt.
+2. Under **Wireless LAN adapter Wi-Fi**, look for `IPv4 Address` (or `Autoconfiguration IPv4 Address`) and `Default Gateway`.
 
-1. Open Start, search for `cmd`, open **Command Prompt**, and enter `ipconfig`.
-2. Under **Wireless LAN adapter Wi-Fi** (or the name you gave your wireless adapter), find `IPv4 Address` (sometimes `Autoconfiguration IPv4 Address`) and `Default Gateway`.
+On this laptop, **the IPv4 address started with `169.254.` and the default gateway was blank.** Windows had assigned itself a temporary address after it failed to get one from the campus network. If you see both signs, try opening a website on the same laptop using a phone hotspot. Then reconnect to campus Wi-Fi, run `ipconfig` again, and see whether a gateway appears and the same page loads.
 
-| What you see | What to do next |
-| --- | --- |
-| IPv4 starts with `169.254.` and the default gateway is blank | In this case, Windows had assigned itself a temporary address. Try opening a website on the same laptop using a phone hotspot. Reconnect to campus Wi-Fi once, run `ipconfig` again, and try the website there. |
-| IPv4 is outside `169.254.x.x` and the default gateway has an IPv4 address | The laptop in this case showed a different result during the failure. Try several websites to see whether the problem affects all of them or just one. |
-| You cannot sign in to campus Wi-Fi | Open the university IT site and select **스마트캠퍼스 안내 → 학내 무선네트워크** for campus Wi-Fi setup instructions. [KMOU IT](https://www.kmou.ac.kr/cisc/main.do) |
+If your IPv4 address starts with something other than `169.254.` and a default gateway is listed, your laptop shows a different symptom. If sign-in itself fails, the university IT site has setup instructions under **학내 무선네트워크** (campus Wi-Fi). [KMOU Wi-Fi setup](https://www.kmou.ac.kr/cisc/main.do)
 
-## What the records show
+## What happened before and after the laptop got an address
 
-**November 3, 2026.** The laptop sent several messages looking for an address (`Discover`). The campus network offered one (`Offer`), the laptop asked to use it (`Request`), and the network approved it (`ACK`). This is how the laptop obtained an IP address through DHCP.
+**November 3, 2026.** The DHCP capture shows the laptop making several attempts to get an address (`Discover`). The campus network offered one (`Offer`), the laptop asked to use it (`Request`), and the network approved it (`ACK`).
 
-![Packet fields in Command Prompt style. The left panel shows repeated Discovers on campus Wi-Fi on November 26. The right shows the Offer, Request, and ACK on November 3.](assets/dhcp-packet-evidence.png)
+![The left panel shows repeated Discovers at the first campus access point on November 26. The right panel shows the Offer and ACK on November 3.](assets/dhcp-packet-evidence.png)
 
-*Figure 1. The right panel measures **21.84 seconds** from the first Discover the laptop captured (frame 1, 0.000 s) to the first Offer (frame 6, 21.840 s). Those frames have different transaction IDs. Starting from the first Discover with the same transaction ID as the Offer (frame 3, 6.544 s) gives **15.30 seconds**. Measuring server processing time would require server-side records.*
+*In the right panel, **21.84 seconds** elapsed between the first Discover the laptop captured (frame 1, 0.000 s) and the first Offer (frame 6, 21.840 s). Those packets have different transaction IDs. The first Discover with the same ID as the Offer was frame 3 (6.544 s), giving an interval of **15.30 seconds**. Both intervals were measured at the laptop.*
 
-**November 26, 2026 (Korea Standard Time).** Between 14:22 and 14:29, the laptop authenticated at three campus access points. During the intervals on campus Wi-Fi, it sent 15 Discovers in total and received zero Offers. The same laptop obtained an address and reached the web on a phone hotspot.
+**November 26, 2026.** Between 14:22 and 14:29 Korea Standard Time, the laptop signed in successfully at three campus access points. It sent 15 Discovers in total and received no Offers while connected to campus Wi-Fi. The same laptop could load websites on a phone hotspot.
 
-The laptop later reconnected to the original access point. Windows recorded **successful authentication at 14:42:53.909 and the start of an IP lease at 14:42:58**. A web request over campus Wi-Fi also succeeded (HTTPS 204). Packet capture had ended before this recovery.
+Later, the laptop reconnected to the original access point. **It obtained a campus IP address at 14:42:58 and could reach the web again.** Packet capture had already ended, so the time comes from the Windows lease record. The records do not show why the earlier attempts went unanswered.
 
-![Windows lease details in Command Prompt style showing a campus IP lease starting at 14:42:58 on November 26.](assets/windows-recovery-evidence.png)
+![Windows ipconfig output showing that the campus IP lease began at 14:42:58 on November 26.](assets/windows-recovery-evidence.png)
 
-*Figure 2. The `ipconfig /all` excerpt shows a ten-hour lease. The IP address, default gateway, and DHCP server address are redacted. Devices normally try to renew before a lease expires. The lease length alone cannot establish whether the campus server was overloaded or running out of addresses.* [DHCP lease renewal specification](https://datatracker.ietf.org/doc/html/rfc2131#section-4.4.5)
-
-<details>
-<summary>References for the write-up</summary>
-
-[Google SRE example postmortem](https://sre.google/sre-book/example-postmortem/) · [Cloudflare incident report](https://blog.cloudflare.com/cloudflare-outage-on-july-17-2020/) · [Julia Evans on diagnosing a network problem](https://jvns.ca/blog/2021/11/04/how-do-you-tell-if-a-problem-is-caused-by-dns/)
-
-</details>
+*The address had a ten-hour lease, as shown in `ipconfig /all`. Windows normally requests a renewal before the lease expires.* [DHCP lease renewal](https://datatracker.ietf.org/doc/html/rfc2131#section-4.4.5)
